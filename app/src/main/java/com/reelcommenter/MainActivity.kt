@@ -10,10 +10,11 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.NumberPicker
 import android.widget.Spinner
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         val languageSpinner = findViewById<Spinner>(R.id.languageSpinner)
         val fallbackXPicker = findViewById<NumberPicker>(R.id.fallbackXPicker)
         val fallbackYPicker = findViewById<NumberPicker>(R.id.fallbackYPicker)
-        val fallbackToggle = findViewById<Switch>(R.id.fallbackToggle)
+        val fallbackToggle = findViewById<CompoundButton>(R.id.fallbackToggle)
         val resetStatsButton = findViewById<Button>(R.id.resetStatsButton)
         val statsText = findViewById<TextView>(R.id.statsText)
 
@@ -106,7 +107,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveSettings(prefs: android.content.SharedPreferences, editText: EditText, delayPicker: NumberPicker, commentList: EditText, xPicker: NumberPicker, yPicker: NumberPicker, fallbackToggle: Switch) {
+    private fun saveSettings(
+        prefs: android.content.SharedPreferences,
+        editText: EditText,
+        delayPicker: NumberPicker,
+        commentList: EditText,
+        xPicker: NumberPicker,
+        yPicker: NumberPicker,
+        fallbackToggle: CompoundButton
+    ) {
         prefs.edit()
             .putString("comment_text", editText.text.toString())
             .putInt("delay_seconds", delayPicker.value)
