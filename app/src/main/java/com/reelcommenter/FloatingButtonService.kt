@@ -1,4 +1,4 @@
-            package com.reelcommenter
+package com.reelcommenter
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -9,7 +9,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -19,7 +21,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import kotlin.concurrent.thread
 
 class FloatingButtonService : Service() {
     private lateinit var windowManager: WindowManager
@@ -30,7 +31,8 @@ class FloatingButtonService : Service() {
     private var initialTouchY: Float = 0f
     private var isMoving = false
     private lateinit var countdownText: TextView
-    private var countdownThread: Thread? = null
+    private val handler = Handler(Looper.getMainLooper())
+    private var countdownRunnable: Runnable? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -101,7 +103,6 @@ class FloatingButtonService : Service() {
                     if (!isMoving) {
                         button.performClick()
                     } else {
-                        // Position speichern
                         prefs.edit().putInt("button_x", params.x).putInt("button_y", params.y).apply()
                     }
                     true
@@ -110,40 +111,30 @@ class FloatingButtonService : Service() {
             }
         }
 
-        // Countdown-Thread starten
-        startCountdownThread()
+        startCountdown()
     }
 
-    private fun startCountdownThread() {
-        countdownThread = thread {
-            while (!Thread.currentThread().isInterrupted) {
-                try {
-                    Thread.sleep(1000)
-                    val prefs = getSharedPreferences("reel_commenter", Context.MODE_PRIVATE)
-                    val delayMs = prefs.getInt("delay_seconds", 12) * 1000
-                    val lastPost = prefs.getLong("last_post_time", 0)
-                    val now = System.currentTimeMillis()
-                    val remaining = (delayMs - (now - lastPost)) / 1000
+    private fun startCountdown() {
+        val runnable = object : Runnable {
+            override fun run() {
+                val prefs = getSharedPreferences("reel_commenter", Context.MODE_PRIVATE)
+                val delayMs = prefs.getInt("delay_seconds", 12) * 1000
+                val lastPost = prefs.getLong("last_post_time", 0)
+                val now = System.currentTimeMillis()
+                val remaining = ((delayMs - (now - lastPost)) / 1000).toInt()
 
-                    if (remaining > 0) {
-                        runOnUiThread {
-                            countdownText.text = "$remaining"
-                            countdownText.visibility = View.VISIBLE
-                        }
-                    } else {
-                        runOnUiThread {
-                            countdownText.visibility = View.GONE
-                        }
-                    }
-                } catch (e: InterruptedException) {
-                    break
+                if (remaining > 0) {
+                    countdownText.text = "$remaining"
+                    countdownText.visibility = View.VISIBLE
+                } else {
+                    countdownText.visibility = View.GONE
                 }
+
+                handler.postDelayed(this, 1000)
             }
         }
-    }
-
-    private fun runOnUiThread(action: () -> Unit) {
-        floatingView.post(action)
+        countdownRunnable = runnable
+        handler.post(runnable)
     }
 
     private fun startForeground() {
@@ -169,7 +160,7 @@ class FloatingButtonService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        countdownThread?.interrupt()
+        countdownRunnable?.let { handler.removeCallbacks(it) }
         if (::floatingView.isInitialized) {
             windowManager.removeView(floatingView)
         }
