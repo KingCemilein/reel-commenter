@@ -12,8 +12,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reel Commenter"
-            android:textSize="26sp"
+            android:text="Reel Commenter PRO"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
 
@@ -21,94 +21,49 @@
             android:id="@+id/statsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="📊 Heute: 0  |  Total: 0"
-            android:textSize="14sp"
-            android:textColor="?attr/colorPrimary"
-            android:layout_marginBottom="16dp" />
+            android:text="📊 Heute: 0 | Total: 0"
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🌍 Sprache / Language"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
+            android:text="⚠️ Auto-Modus = Riskant! Max. 20-30 Kommentare/Stunde!"
+            android:textColor="#FF0000"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp" />
 
-        <Spinner
-            android:id="@+id/languageSpinner"
-            android:layout_width="match_parent"
+        <CheckBox
+            android:id="@+id/autoModeCheck"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="🤖 Auto-Modus (postet beim Öffnen eines Reels)"
             android:layout_marginBottom="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="✏️ Standard-Kommentar:"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/commentText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Passt auf euch auf"
-            android:layout_marginBottom="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📝 Kommentar-Liste (mit Komma trennen):"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/commentListInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minLines="3"
-            android:gravity="top"
-            android:hint="Passt auf euch auf, Passt gut auf euch auf, ..."
-            android:layout_marginBottom="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⏱️ Mindestpause (Sekunden):"
-            android:textStyle="bold" />
-
-        <NumberPicker
-            android:id="@+id/delayPicker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📍 Koordinaten-Fallback (wenn Button nicht gefunden):"
+            android:text="⏱️ Smart Delay (Min - Max Sekunden):"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="4dp">
+            android:layout_marginBottom="12dp">
+
+            <NumberPicker
+                android:id="@+id/minDelayPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="X:" />
+                android:text=" bis "
+                android:layout_gravity="center_vertical" />
 
             <NumberPicker
-                android:id="@+id/fallbackXPicker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Y:" />
-
-            <NumberPicker
-                android:id="@+id/fallbackYPicker"
+                android:id="@+id/maxDelayPicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -116,24 +71,86 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="X=85%, Y=88% ist meist unten rechts"
-            android:textSize="12sp"
-            android:textColor="#888888"
-            android:layout_marginBottom="4dp" />
+            android:text="📝 Kommentar-Pool 1 (Komma getrennt):"
+            android:textStyle="bold" />
 
-        <CheckBox
-            android:id="@+id/fallbackToggle"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/pool1Input"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Koordinaten-Fallback aktivieren"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:minLines="2"
+            android:gravity="top"
+            android:hint="Passt auf euch auf, Passt auf euch auf 🙏"
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Wichtig: Aktiviere zuerst den Accessibility-Service!"
-            android:textColor="#FF0000"
+            android:text="📝 Kommentar-Pool 2:"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/pool2Input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="2"
+            android:gravity="top"
+            android:hint="Passt gut auf euch auf, Bleibt gesund!"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📝 Kommentar-Pool 3:"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/pool3Input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="2"
+            android:gravity="top"
+            android:hint="Passt auf euch auf! ❤️, Coole Reels!"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎯 Aktiver Pool:"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/poolSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <CheckBox
+                android:id="@+id/soundCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔊 Sound"
+                android:checked="true" />
+
+            <CheckBox
+                android:id="@+id/vibrationCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📳 Vibration"
+                android:checked="true" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/fallbackCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📍 Koordinaten-Fallback (X=85 Y=88)"
             android:layout_marginBottom="12dp" />
 
         <Button
@@ -167,9 +184,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bedienung: Öffne Instagram, gehe zu einem Reel und tippe auf den pinken schwebenden Button. Warte mindestens 12 Sekunden zwischen Kommentaren! Der Button zeigt einen Countdown an."
+            android:text="Bedienung: Auto-Modus = du swipst, App postet. Manuell = pinken Button drücken. Warte IMMER zwischen Kommentaren!"
             android:textSize="12sp"
-            android:textColor="#888888" />
+            android:textColor="#666666" />
 
     </LinearLayout>
 </ScrollView>
