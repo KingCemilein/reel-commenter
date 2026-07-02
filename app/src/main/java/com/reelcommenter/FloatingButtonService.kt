@@ -1,4 +1,4 @@
-package com.reelcommenter
+            package com.reelcommenter
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -16,8 +16,10 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import kotlin.concurrent.thread
 
 class FloatingButtonService : Service() {
     private lateinit var windowManager: WindowManager
@@ -27,6 +29,8 @@ class FloatingButtonService : Service() {
     private var initialTouchX: Float = 0f
     private var initialTouchY: Float = 0f
     private var isMoving = false
+    private lateinit var countdownText: TextView
+    private var countdownThread: Thread? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -35,6 +39,8 @@ class FloatingButtonService : Service() {
         startForeground()
 
         floatingView = LayoutInflater.from(this).inflate(R.layout.floating_button, null)
+
+        val prefs = getSharedPreferences("reel_commenter", Context.MODE_PRIVATE)
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -48,13 +54,14 @@ class FloatingButtonService : Service() {
         )
 
         params.gravity = Gravity.TOP or Gravity.START
-        params.x = 100
-        params.y = 200
+        params.x = prefs.getInt("button_x", 100)
+        params.y = prefs.getInt("button_y", 200)
 
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.addView(floatingView, params)
 
         val button = floatingView.findViewById<ImageButton>(R.id.floatingActionButton)
+        countdownText = floatingView.findViewById(R.id.countdownText)
 
         button.setOnClickListener {
             if (InstagramAccessibilityService.isRunning) {
@@ -93,12 +100,50 @@ class FloatingButtonService : Service() {
                 MotionEvent.ACTION_UP -> {
                     if (!isMoving) {
                         button.performClick()
+                    } else {
+                        // Position speichern
+                        prefs.edit().putInt("button_x", params.x).putInt("button_y", params.y).apply()
                     }
                     true
                 }
                 else -> false
             }
         }
+
+        // Countdown-Thread starten
+        startCountdownThread()
+    }
+
+    private fun startCountdownThread() {
+        countdownThread = thread {
+            while (!Thread.currentThread().isInterrupted) {
+                try {
+                    Thread.sleep(1000)
+                    val prefs = getSharedPreferences("reel_commenter", Context.MODE_PRIVATE)
+                    val delayMs = prefs.getInt("delay_seconds", 12) * 1000
+                    val lastPost = prefs.getLong("last_post_time", 0)
+                    val now = System.currentTimeMillis()
+                    val remaining = (delayMs - (now - lastPost)) / 1000
+
+                    if (remaining > 0) {
+                        runOnUiThread {
+                            countdownText.text = "$remaining"
+                            countdownText.visibility = View.VISIBLE
+                        }
+                    } else {
+                        runOnUiThread {
+                            countdownText.visibility = View.GONE
+                        }
+                    }
+                } catch (e: InterruptedException) {
+                    break
+                }
+            }
+        }
+    }
+
+    private fun runOnUiThread(action: () -> Unit) {
+        floatingView.post(action)
     }
 
     private fun startForeground() {
@@ -124,6 +169,7 @@ class FloatingButtonService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        countdownThread?.interrupt()
         if (::floatingView.isInitialized) {
             windowManager.removeView(floatingView)
         }
