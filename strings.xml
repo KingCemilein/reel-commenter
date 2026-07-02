@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Reel Commenter</string>
+    <string name="accessibility_service_description">Dieser Service erkennt Instagram Reels und postet Kommentare automatisch, wenn der schwebende Button gedrückt wird. Er ist nur auf deinen Befehl hin aktiv und schützt deinen Account durch ein Rate-Limit.</string>
+</resources>
