@@ -1,4 +1,4 @@
-name: Build APK
+name: Build and Release APK
 
 on:
   push:
@@ -37,8 +37,12 @@ jobs:
         export ANDROID_HOME=$ANDROID_SDK_ROOT
         gradle assembleDebug
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
       with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        files: app/build/outputs/apk/debug/app-debug.apk
+        tag_name: v1.0
+        name: "Reel Commenter v1.0"
+        body: "APK der Reel Commenter App"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
