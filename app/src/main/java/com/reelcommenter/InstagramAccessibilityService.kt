@@ -1,4 +1,4 @@
-            package com.reelcommenter
+                  package com.reelcommenter
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
@@ -19,14 +19,12 @@ class InstagramAccessibilityService : AccessibilityService() {
         var isRunning = false
     }
 
-    // Deutsche + Englische Button-Texte
     private val postButtonTexts = arrayOf(
         "Posten", "Teilen", "Post", "Share", "Publish",
         "Veröffentlichen", "Senden", "Kommentieren",
         "Comment", "Send", "Sende", "Absenden", "Hochladen"
     )
 
-    // Kommentar-Platzhalter (deutsch + englisch)
     private val commentHints = arrayOf(
         "Kommentar hinzufügen", "Kommentar", "Kommentieren",
         "Add a comment", "Comment", "Schreib einen Kommentar",
@@ -51,7 +49,6 @@ class InstagramAccessibilityService : AccessibilityService() {
         val lastPost = prefs.getLong("last_post_time", 0)
         val now = System.currentTimeMillis()
 
-        // Rate-Limit
         if (now - lastPost < delayMs) {
             val remaining = (delayMs - (now - lastPost)) / 1000 + 1
             showToast("⏳ Warte noch $remaining Sekunden!")
@@ -66,10 +63,8 @@ class InstagramAccessibilityService : AccessibilityService() {
             return
         }
 
-        // Menschliche Pause
         Thread.sleep((200 + Random.nextInt(400)).toLong())
 
-        // 1. Kommentarfeld finden
         val editText = findCommentField(root)
         if (editText == null) {
             showToast("❌ Kommentarfeld nicht gefunden")
@@ -77,10 +72,8 @@ class InstagramAccessibilityService : AccessibilityService() {
             return
         }
 
-        // 2. Kommentar wählen (aus eigener Liste oder Standard)
         val selectedComment = pickRandomComment(prefs)
 
-        // 3. Text eingeben
         val args = Bundle()
         args.putCharSequence(
             AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
@@ -96,10 +89,8 @@ class InstagramAccessibilityService : AccessibilityService() {
 
         showToast("✍️ Text eingefügt")
 
-        // Pause vor Klick
         Thread.sleep((300 + Random.nextInt(500)).toLong())
 
-        // 4. Posten-Button finden
         var postButton = findPostButton(root)
 
         if (postButton != null) {
@@ -110,7 +101,6 @@ class InstagramAccessibilityService : AccessibilityService() {
                 showToast("❌ Klicken fehlgeschlagen")
             }
         } else {
-            // KOORDINATEN-FALLBACK
             val useFallback = prefs.getBoolean("use_fallback_coords", false)
             if (useFallback) {
                 val xPct = prefs.getInt("fallback_x", 85)
@@ -145,7 +135,6 @@ class InstagramAccessibilityService : AccessibilityService() {
     }
 
     private fun onPostSuccess(prefs: android.content.SharedPreferences, now: Long) {
-        // Statistik aktualisieren
         val cal = Calendar.getInstance()
         val todayKey = "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.MONTH)}-${cal.get(Calendar.DAY_OF_MONTH)}"
         val lastReset = prefs.getString("last_count_reset", "")
@@ -180,17 +169,14 @@ class InstagramAccessibilityService : AccessibilityService() {
     }
 
     private fun findPostButton(root: AccessibilityNodeInfo): AccessibilityNodeInfo? {
-        // 1. Suche nach Texten
         for (text in postButtonTexts) {
             val node = findNodeByText(root, text)
             if (node != null && isClickableButton(node)) return node
         }
-        // 2. Suche nach ContentDescription
         for (text in postButtonTexts) {
             val node = findNodeByDesc(root, text)
             if (node != null && isClickableButton(node)) return node
         }
-        // 3. Beliebiger klickbarer Text (kurz)
         return findAnyClickableWithShortText(root)
     }
 
@@ -273,4 +259,4 @@ class InstagramAccessibilityService : AccessibilityService() {
         super.onDestroy()
         isRunning = false
     }
-}
+}                          
